@@ -509,11 +509,42 @@
         }
 
         async function loadBugLogs() {
-            if (currentUser.role === 'admin') return;
-            const { data } = await sb.from('bug_logs').select('*').order('created_at', { ascending: false }).limit(10);
-            document.getElementById('bug-log-list').innerHTML = data ? data.map(l => `
-                <tr><td>${l.executor}</td><td>${l.target}</td><td>${l.bug_type}</td><td>${new Date(l.created_at).toLocaleTimeString()}</td></tr>
-            `).join('') : '';
+            if (!currentUser || currentUser.role === 'admin') return;
+
+            let query = sb.from('bug_logs').select('*');
+
+            // FITUR PRIVASI: Owner tidak boleh melihat log Pemilik
+            if (currentUser.role === 'owner') {
+                // Ambil daftar username yang memiliki role 'pemilik'
+                const { data: listPemilik } = await sb
+                    .from('users')
+                    .select('username')
+                    .eq('role', 'pemilik');
+
+                if (listPemilik && listPemilik.length > 0) {
+                    const namaPemilik = listPemilik.map(u => u.username);
+                    // Filter: Hanya tampilkan log yang eksekutornya BUKAN salah satu dari namaPemilik
+                    query = query.not('executor', 'in', `(${namaPemilik.join(',')})`);
+                }
+            }
+
+            const { data, error } = await query
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            const logTable = document.getElementById('bug-log-list');
+            if (data) {
+                logTable.innerHTML = data.map(l => `
+            <tr>
+                <td>${l.executor}</td>
+                <td>${l.target}</td>
+                <td><span class="badge" style="background: var(--secondary); padding: 2px 8px; border-radius: 4px; font-size: 10px;">${l.bug_type}</span></td>
+                <td>${new Date(l.created_at).toLocaleTimeString()}</td>
+            </tr>
+        `).join('');
+            } else {
+                logTable.innerHTML = '';
+            }
         }
 
         async function reqPairing() {
