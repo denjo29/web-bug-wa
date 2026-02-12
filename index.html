@@ -315,12 +315,6 @@
                     <h4>KELOLA DATABASE BUG</h4>
                     <input type="text" id="new-bug-name" placeholder="Nama Bug Baru">
                     <button onclick="addBugType()" class="btn-sub">TAMBAH KE LIST</button>
-
-                    <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                        <h4 style="font-size: 0.9rem; color: var(--danger);">HAPUS PAYLOAD TERSEDIA</h4>
-                        <div id="manage-bug-list" style="max-height: 200px; overflow-y: auto;">
-                        </div>
-                    </div>
                 </div>
 
                 <div style="margin-top: 30px;">
@@ -487,43 +481,6 @@
             const select = document.getElementById('bug-select');
             select.innerHTML = '<option value="">-- SELECT PAYLOAD --</option>';
             if (data) data.forEach(b => select.innerHTML += `<option value="${b.name}">${b.name}</option>`);
-        }
-
-        async function loadBugList() {
-            const { data } = await sb.from('bug_list').select('*');
-            const container = document.getElementById('bug-type'); // Dropdown eksekusi
-            const manageList = document.getElementById('manage-bug-list'); // Daftar manajemen
-
-            if (data) {
-                // Update Dropdown di menu eksekusi
-                container.innerHTML = data.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
-
-                // Update Daftar di menu manajemen (dengan tombol hapus)
-                if (manageList) {
-                    manageList.innerHTML = data.map(b => `
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px;">
-                    <span>${b.name}</span>
-                    <button onclick="deleteBug('${b.id}', '${b.name}')" class="btn-danger" style="padding: 5px 10px; font-size: 10px; width: auto; margin-top: 0;">DEL</button>
-                </div>
-            `).join('');
-                }
-            }
-        }
-
-        async function deleteBug(id, name) {
-            if (confirm(`Apakah Anda yakin ingin menghapus payload "${name}"?`)) {
-                const { error } = await sb
-                    .from('bug_list')
-                    .delete()
-                    .eq('id', id);
-
-                if (error) {
-                    alert("Gagal menghapus: " + error.message);
-                } else {
-                    alert("Payload berhasil dihapus!");
-                    loadBugList(); // Refresh tampilan web otomatis
-                }
-            }
         }
 
         async function addBugType() {
