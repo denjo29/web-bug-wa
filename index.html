@@ -229,10 +229,53 @@
             margin-bottom: 20px;
             border-radius: 4px;
         }
+
+        /* Tambahkan/Update CSS ini */
+        .brand-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--secondary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .brand-logo span {
+            color: #fff;
+            font-size: 0.8rem;
+            display: block;
+            letter-spacing: 5px;
+            margin-top: -5px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .brand-container {
+                position: relative;
+                top: 0;
+                left: 0;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+        }
     </style>
 </head>
 
 <body>
+
+    <div class="brand-container">
+        <div class="brand-logo">
+            LEXXY<span>CODE</span>
+        </div>
+    </div>
 
     <div id="login-box" class="card" style="max-width: 420px; margin-top: 50px;">
         <h2 style="color: var(--primary);">SYSTEM LOGIN</h2>
