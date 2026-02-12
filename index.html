@@ -252,6 +252,15 @@
         </div>
     </div>
 
+    <div id="captcha-container" style="margin-bottom: 15px; text-align: center;">
+        <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
+            <canvas id="captcha-canvas" width="120" height="40" style="border-radius: 8px; background: #222;"></canvas>
+            <button onclick="generateCaptcha()" type="button"
+                style="width: auto; padding: 5px; font-size: 12px;">🔄</button>
+        </div>
+        <input type="text" id="captcha-input" placeholder="Masukkan Kode di Atas" style="margin-top: 10px;">
+    </div>
+
     <div id="login-box" class="card" style="max-width: 420px; margin-top: 50px;">
         <h2 style="color: var(--primary);">SYSTEM LOGIN</h2>
         <div class="warning-text">OTORISASI DIPERLUKAN UNTUK MENGAKSES PANEL INI.</div>
@@ -353,9 +362,55 @@
         const sb = supabase.createClient(SB_URL, SB_KEY);
         let currentUser = null;
 
+        let currentCaptcha = "";
+
+        function generateCaptcha() {
+            const canvas = document.getElementById('captcha-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            currentCaptcha = "";
+
+            for (let i = 0; i < 5; i++) {
+                currentCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            // Background
+            ctx.fillStyle = "#1a1c29";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Noise (Garis pengganggu)
+            for (let i = 0; i < 6; i++) {
+                ctx.strokeStyle = "rgba(0, 229, 255, 0.4)";
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * 130, Math.random() * 45);
+                ctx.lineTo(Math.random() * 130, Math.random() * 45);
+                ctx.stroke();
+            }
+
+            // Teks Captcha
+            ctx.font = "bold 24px Orbitron";
+            ctx.fillStyle = "#00e5ff";
+            ctx.textAlign = "center";
+            ctx.fillText(currentCaptcha, 65, 32);
+        }
+
+        // Jalankan captcha saat web dibuka
+        window.addEventListener('DOMContentLoaded', generateCaptcha);
+
         async function handleLogin() {
             const u = document.getElementById('user-in').value;
             const p = document.getElementById('pass-in').value;
+            const captchaIn = document.getElementById('captcha-in').value.toUpperCase();
+
+            // --- CEK CAPTCHA DULU ---
+            if (captchaIn !== currentCaptcha) {
+                alert("❌ Kode Captcha Salah!");
+                generateCaptcha(); // Ganti captcha baru
+                document.getElementById('captcha-in').value = "";
+                return;
+            }
+
             const { data, error } = await sb.from('users').select('*').eq('username', u).eq('password', p).single();
 
             if (data) {
@@ -390,7 +445,10 @@
 
                 loadBugTypes();
                 loadBugLogs();
-            } else { alert("Authentication Failed!"); }
+            } else {
+                alert("Authentication Failed!");
+                generateCaptcha(); // Ganti captcha jika login gagal
+            }
         }
 
         // --- Logika Fungsi Tetap Sama Seperti File Asli Anda agar Sistem Tidak Rusak ---
