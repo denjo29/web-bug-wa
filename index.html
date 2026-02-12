@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB BUG WA | LEXXY CODE</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00e5ff;
+            --secondary: #7000ff;
+            --bg: #0a0b10;
+            --card-bg: rgba(30, 32, 45, 0.7);
+            --text: #e0e0e0;
+            --danger: #ff4444;
+            --success: #00ff88;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #161b33, var(--bg));
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 1000px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        h2,
+        h4 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Input Styling */
+        input,
+        select {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            color: white;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+            outline: none;
+        }
+
+        /* Button Styling */
+        .btn-main {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.2);
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn-sub {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .btn-sub:hover {
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        .btn-danger {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-logout {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Layout Grid */
+        .header-dashboard {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Code Display */
+        .code-box {
+            background: #000;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px dashed var(--primary);
+            color: var(--primary);
+            font-size: 2rem;
+            letter-spacing: 10px;
+            margin: 20px 0;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Table Styling */
+        .scroll-table {
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        th {
+            color: var(--primary);
+            padding: 12px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        td {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px;
+        }
+
+        td:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        td:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .warning-text {
+            background: rgba(255, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 12px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="login-box" class="card" style="max-width: 420px; margin-top: 50px;">
+        <h2 style="color: var(--primary);">SYSTEM LOGIN</h2>
+        <div class="warning-text">OTORISASI DIPERLUKAN UNTUK MENGAKSES PANEL INI.</div>
+        <input type="text" id="user-in" placeholder="Username / Email">
+        <input type="password" id="pass-in" placeholder="Password">
+        <button onclick="handleLogin()" class="btn-main">INITIALIZE LOGIN</button>
+    </div>
+
+    <div id="dashboard-box" class="card hidden">
+        <div class="header-dashboard">
+            <div>
+                <h2 id="display-role" style="color: var(--primary); margin: 0;">PANEL</h2>
+                <span id="bot-status" class="status-badge">Status: Offline</span>
+            </div>
+            <button onclick="handleLogout()" class="btn-logout">SECURE LOGOUT</button>
+        </div>
+
+        <div id="main-grid" class="grid">
+
+            <div id="manage-ui" class="section-box hidden">
+                <h4><span style="color: var(--primary);">01.</span> MANAJEMEN AKSES</h4>
+                <input type="text" id="new-user" placeholder="Username Baru">
+                <input type="password" id="new-pass" placeholder="Password Baru">
+
+                <select id="new-role">
+                    <option value="admin">Role: Admin</option>
+                    <option value="owner">Role: Owner</option>
+                </select>
+                <p id="role-info" class="hidden" style="color: yellow; font-size: 0.8rem;">Note: Role otomatis diatur ke
+                    ADMIN</p>
+
+                <input type="date" id="new-exp">
+                <button onclick="addUser()" class="btn-sub">KONFIRMASI USER</button>
+
+                <div class="scroll-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Expiry</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="bot-ui" class="section-box">
+                <div id="pairing-section" class="hidden">
+                    <h4><span style="color: var(--primary);">02.</span> KONTROL BOT</h4>
+                    <input type="number" id="bot-num" placeholder="Format: 628xxx">
+                    <button onclick="reqPairing()" class="btn-sub">GENERATE PAIRING CODE</button>
+                    <div id="code-display" class="code-box">_ _ _ _ _ _</div>
+
+                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.05); margin: 20px 0;">
+
+                    <h4>KELOLA DATABASE BUG</h4>
+                    <input type="text" id="new-bug-name" placeholder="Nama Bug Baru">
+                    <button onclick="addBugType()" class="btn-sub">TAMBAH KE LIST</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4><span style="color: var(--primary);">03.</span> EKSEKUSI BUG</h4>
+                    <input type="number" id="target" placeholder="Target JID (628xxx)">
+                    <select id="bug-select">
+                        <option value="">-- SELECT PAYLOAD --</option>
+                    </select>
+                    <button onclick="executeBug()" class="btn-main">EXECUTE ATTACK</button>
+                </div>
+
+                <div id="history-section" class="hidden" style="margin-top: 30px;">
+                    <h4>RIWAYAT EKSEKUSI</h4>
+                    <div class="scroll-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Executor</th>
+                                    <th>Target</th>
+                                    <th>Payload</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bug-log-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gunakan kredensial yang ada pada file Anda
+        const SB_URL = "https://uonsubukkmyapxmhpqtt.supabase.co";
+        const SB_KEY = "sb_publishable_hQsFdxh8K55jIWMEKH0JCw_8V319j-m";
+        const sb = supabase.createClient(SB_URL, SB_KEY);
+        let currentUser = null;
+
+        async function handleLogin() {
+            const u = document.getElementById('user-in').value;
+            const p = document.getElementById('pass-in').value;
+            const { data, error } = await sb.from('users').select('*').eq('username', u).eq('password', p).single();
+
+            if (data) {
+                if (new Date() > new Date(data.expired_at) && data.role !== 'pemilik') return alert("Access Expired!");
+                currentUser = data;
+
+                document.getElementById('login-box').classList.add('hidden');
+                document.getElementById('dashboard-box').classList.remove('hidden');
+                document.getElementById('display-role').innerText = data.role.toUpperCase() + " CONTROL CENTER";
+
+                // Reset UI State
+                const sections = ['manage-ui', 'pairing-section', 'history-section', 'role-info'];
+                sections.forEach(s => document.getElementById(s).classList.add('hidden'));
+                document.getElementById('main-grid').classList.remove('admin-layout');
+                document.getElementById('new-role').classList.remove('hidden');
+
+                if (data.role === 'pemilik') {
+                    document.getElementById('manage-ui').classList.remove('hidden');
+                    document.getElementById('pairing-section').classList.remove('hidden');
+                    document.getElementById('history-section').classList.remove('hidden');
+                    loadUsers();
+                    listenBot();
+                } else if (data.role === 'owner') {
+                    document.getElementById('manage-ui').classList.remove('hidden');
+                    document.getElementById('history-section').classList.remove('hidden');
+                    document.getElementById('new-role').classList.add('hidden');
+                    document.getElementById('role-info').classList.remove('hidden');
+                    loadUsers();
+                } else {
+                    document.getElementById('main-grid').classList.add('admin-layout');
+                }
+
+                loadBugTypes();
+                loadBugLogs();
+            } else { alert("Authentication Failed!"); }
+        }
+
+        // --- Logika Fungsi Tetap Sama Seperti File Asli Anda agar Sistem Tidak Rusak ---
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('dashboard-box').classList.add('hidden');
+            document.getElementById('login-box').classList.remove('hidden');
+            document.getElementById('user-in').value = '';
+            document.getElementById('pass-in').value = '';
+        }
+
+        async function loadUsers() {
+            let query = sb.from('users').select('*');
+            if (currentUser.role === 'owner') query = query.eq('role', 'admin');
+            const { data } = await query;
+            const tbody = document.getElementById('user-list');
+            if (data) {
+                tbody.innerHTML = data.map(u => {
+                    const canDelete = (currentUser.role === 'pemilik' && u.role !== 'pemilik') ||
+                        (currentUser.role === 'owner' && u.created_by === currentUser.username);
+                    return `
+                        <tr>
+                            <td>${u.username}</td>
+                            <td><span style="color:var(--primary)">${u.role}</span></td>
+                            <td>${new Date(u.expired_at).toLocaleDateString()}</td>
+                            <td>${canDelete ? `<button onclick="delUser('${u.id}')" class="btn-danger">Del</button>` : '-'}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        async function addUser() {
+            const user = document.getElementById('new-user').value;
+            const pass = document.getElementById('new-pass').value;
+            const exp = document.getElementById('new-exp').value;
+            let roleChoice = currentUser.role === 'owner' ? 'admin' : document.getElementById('new-role').value;
+
+            if (!user || !pass || !exp) return alert("Fill all fields!");
+
+            const { error } = await sb.from('users').insert([{
+                username: user,
+                password: pass,
+                role: roleChoice,
+                expired_at: exp,
+                created_by: currentUser.username // Pastikan baris ini ada
+            }]);
+
+            if (error) {
+                // Tambahan agar pesan error lebih jelas jika username duplikat
+                if (error.message.includes("duplicate key")) {
+                    alert("Username sudah digunakan!");
+                } else {
+                    alert(error.message);
+                }
+            } else {
+                alert("Success!");
+                loadUsers();
+            }
+        }
+
+        async function delUser(id) {
+            if (confirm("Terminate access?")) { await sb.from('users').delete().eq('id', id); loadUsers(); }
+        }
+
+        async function loadBugTypes() {
+            const { data } = await sb.from('bug_list').select('*');
+            const select = document.getElementById('bug-select');
+            select.innerHTML = '<option value="">-- SELECT PAYLOAD --</option>';
+            if (data) data.forEach(b => select.innerHTML += `<option value="${b.name}">${b.name}</option>`);
+        }
+
+        async function addBugType() {
+            const name = document.getElementById('new-bug-name').value;
+            if (!name) return;
+            await sb.from('bug_list').insert([{ name: name }]);
+            alert("Payload added!");
+            document.getElementById('new-bug-name').value = '';
+            loadBugTypes();
+        }
+
+        async function executeBug() {
+            const target = document.getElementById('target').value;
+            const type = document.getElementById('bug-select').value;
+            if (!target || !type) return alert("Target & Payload required!");
+            await sb.from('bug_logs').insert([{ executor: currentUser.username, target: target, bug_type: type }]);
+            alert(`EXEKUSI TERKIRIM: ${type} -> ${target}`);
+            loadBugLogs();
+        }
+
+        async function loadBugLogs() {
+            if (currentUser.role === 'admin') return;
+            const { data } = await sb.from('bug_logs').select('*').order('created_at', { ascending: false }).limit(10);
+            document.getElementById('bug-log-list').innerHTML = data ? data.map(l => `
+                <tr><td>${l.executor}</td><td>${l.target}</td><td>${l.bug_type}</td><td>${new Date(l.created_at).toLocaleTimeString()}</td></tr>
+            `).join('') : '';
+        }
+
+        async function reqPairing() {
+            const num = document.getElementById('bot-num').value;
+            if (!num) return alert("Input bot number!");
+            await sb.from('bot_config').update({ phone_number: num, status: 'request_pairing', pairing_code: '......' }).eq('id', 1);
+            alert("Request broadcasted to VPS!");
+        }
+
+        function listenBot() {
+            sb.channel('bot').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bot_config' }, payload => {
+                document.getElementById('code-display').innerText = payload.new.pairing_code;
+                document.getElementById('bot-status').innerText = "Status: " + payload.new.status;
+            }).subscribe();
+        }
+    </script>
+</body>
+
+</html>
