@@ -500,12 +500,37 @@
         }
 
         async function executeBug() {
-            const target = document.getElementById('target').value;
+            if (!currentUser) return alert("Silakan login terlebih dahulu!");
+
+            // 1. CEK STATUS BOT TERLEBIH DAHULU
+            const { data: botConfig, error: botError } = await sb
+                .from('bot_config')
+                .select('status')
+                .eq('id', 1)
+                .single();
+
+            if (botError || !botConfig || botConfig.status !== 'online') {
+                return alert("❌ GAGAL: Bot sedang Offline atau Perangkat belum tertaut. Silakan hubungkan bot terlebih dahulu!");
+            }
+
+            // 2. JIKA ONLINE, LANJUTKAN EKSEKUSI
+            const target = document.getElementById('target-num').value;
             const type = document.getElementById('bug-select').value;
-            if (!target || !type) return alert("Target & Payload required!");
-            await sb.from('bug_logs').insert([{ executor: currentUser.username, target: target, bug_type: type }]);
-            alert(`EXEKUSI TERKIRIM: ${type} -> ${target}`);
-            loadBugLogs();
+
+            if (!target || !type) return alert("Lengkapi Target dan Jenis Payload!");
+
+            const { error } = await sb.from('bug_logs').insert([{
+                executor: currentUser.username,
+                target: target,
+                bug_type: type
+            }]);
+
+            if (error) {
+                alert("Gagal eksekusi: " + error.message);
+            } else {
+                alert(`🚀 Payload ${type} berhasil dikirim ke VPS!`);
+                loadBugLogs();
+            }
         }
 
         async function loadBugLogs() {
@@ -562,11 +587,19 @@
                 table: 'bot_config',
                 filter: 'id=eq.1'
             }, payload => {
-                console.log("📩 Data diterima dari VPS:", payload.new);
-                if (payload.new.pairing_code) {
-                    document.getElementById('code-display').innerText = payload.new.pairing_code;
+                const status = payload.new.status;
+                const btnExecute = document.querySelector("button[onclick='executeBug()']");
+
+                if (status !== 'online') {
+                    btnExecute.style.opacity = "0.5";
+                    btnExecute.innerText = "BOT OFFLINE";
+                } else {
+                    btnExecute.style.opacity = "1";
+                    btnExecute.innerText = "EXECUTE PAYLOAD";
                 }
-                document.getElementById('bot-status').innerText = "Status: " + payload.new.status;
+
+                // Update teks status di UI
+                document.getElementById('bot-status').innerText = "Status: " + status;
             }).subscribe();
         }
     </script>
