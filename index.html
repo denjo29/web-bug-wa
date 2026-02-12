@@ -306,6 +306,7 @@
                     <h4><span style="color: var(--primary);">02.</span> KONTROL BOT</h4>
                     <input type="number" id="bot-num" placeholder="Format: 628xxx">
                     <button onclick="reqPairing()" class="btn-sub">GENERATE PAIRING CODE</button>
+                    <button onclick="resetBotConfig()" class="btn-danger" style="width: 100%; margin-top: 10px;">RESET KONEKSI BOT</button>
                     <div id="code-display" class="code-box">_ _ _ _ _ _</div>
 
                     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.05); margin: 20px 0;">
@@ -450,6 +451,25 @@
                 loadUsers();
             }
         }
+
+        async function resetBotConfig() {
+    if (confirm("Reset koneksi bot? Ini akan menghapus sesi lama agar Anda bisa input nomor baru.")) {
+        // Update database agar kembali ke status awal
+        const { error } = await sb.from('bot_config')
+            .update({ 
+                phone_number: null, 
+                pairing_code: '......', 
+                status: 'offline' 
+            })
+            .eq('id', 1);
+
+        if (!error) {
+            alert("Database di-reset. Silakan hapus folder 'auth_info_baileys' di VPS dan jalankan ulang bot.");
+            document.getElementById('code-display').innerText = "_ _ _ _ _ _";
+            document.getElementById('bot-num').value = "";
+        }
+    }
+}
 
         async function delUser(id) {
             if (confirm("Terminate access?")) { await sb.from('users').delete().eq('id', id); loadUsers(); }
