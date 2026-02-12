@@ -301,17 +301,6 @@
                 </div>
             </div>
 
-            <div class="section-box">
-                <h4>MANAJEMEN PAYLOAD</h4>
-                <div id="manage-bug-list" style="max-height: 300px; overflow-y: auto;">
-                </div>
-
-                <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                    <input type="text" id="new-bug-name" placeholder="Nama Payload Baru">
-                    <button onclick="addBug()" class="btn-sub">TAMBAH PAYLOAD</button>
-                </div>
-            </div>
-
             <div id="bot-ui" class="section-box">
                 <div id="pairing-section" class="hidden">
                     <h4><span style="color: var(--primary);">02.</span> KONTROL BOT</h4>
@@ -326,6 +315,12 @@
                     <h4>KELOLA DATABASE BUG</h4>
                     <input type="text" id="new-bug-name" placeholder="Nama Bug Baru">
                     <button onclick="addBugType()" class="btn-sub">TAMBAH KE LIST</button>
+
+                    <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                        <h4 style="font-size: 0.9rem; color: var(--danger);">HAPUS PAYLOAD TERSEDIA</h4>
+                        <div id="manage-bug-list" style="max-height: 200px; overflow-y: auto;">
+                        </div>
+                    </div>
                 </div>
 
                 <div style="margin-top: 30px;">
