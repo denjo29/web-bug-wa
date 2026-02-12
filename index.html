@@ -485,11 +485,18 @@
 
         async function addBugType() {
             const name = document.getElementById('new-bug-name').value;
-            if (!name) return;
-            await sb.from('bug_list').insert([{ name: name }]);
-            alert("Payload added!");
-            document.getElementById('new-bug-name').value = '';
-            loadBugTypes();
+            if (!name) return alert("Masukkan nama bug!");
+
+            // Simpan ke database Supabase
+            const { error } = await sb.from('bug_list').insert([{ name: name }]);
+
+            if (error) {
+                alert("Gagal menambah: " + error.message);
+            } else {
+                alert("Payload berhasil ditambahkan ke Database & Bot!");
+                document.getElementById('new-bug-name').value = "";
+                loadBugList(); // Refresh dropdown dan list hapus otomatis
+            }
         }
 
         async function executeBug() {
