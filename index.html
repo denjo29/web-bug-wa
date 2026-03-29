@@ -48,56 +48,60 @@
         }
 
         body {
-    margin: 0;
-    font-family: 'Rajdhani', sans-serif;
-    background:
-        radial-gradient(circle at left, rgba(255, 0, 255, 0.15), transparent 40%),
-        radial-gradient(circle at right, rgba(0, 255, 255, 0.15), transparent 40%),
-        #05070f;
+            margin: 0;
+            font-family: 'Rajdhani', sans-serif;
+            background:
+                radial-gradient(circle at left, rgba(255, 0, 255, 0.15), transparent 40%),
+                radial-gradient(circle at right, rgba(0, 255, 255, 0.15), transparent 40%),
+                #05070f;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-/* GRID BACKGROUND (INI YANG DIANIMASI) */
-body::before {
-    content: "";
-    position: fixed;
-    width: 100%;
-    height: 100%;
+        /* GRID BACKGROUND (INI YANG DIANIMASI) */
+        body::before {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 100%;
 
-    background-image:
-        linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
 
-    background-size: 40px 40px;
+            background-size: 40px 40px;
 
-    animation: gridMove 10s linear infinite; /* PINDAH KE SINI */
-    opacity: 0.6;
-    z-index: 0;
-}
+            animation: gridMove 10s linear infinite;
+            /* PINDAH KE SINI */
+            opacity: 0.6;
+            z-index: 0;
+        }
 
-/* GLOW */
-body::after {
-    content: "";
-    position: fixed;
-    width: 100%;
-    height: 100%;
+        /* GLOW */
+        body::after {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0.03) 1px,
+                    transparent 1px);
+            background-size: 100% 3px;
+            pointer-events: none;
+        }
 
-    background: radial-gradient(circle at bottom right,
-        rgba(0, 229, 255, 0.15),
-        transparent 60%);
+        /* ANIMASI GRID */
+        @keyframes gridMove {
+            from {
+                background-position: 0 0;
+            }
 
-    z-index: 0;
-}
-
-/* ANIMASI GRID */
-@keyframes gridMove {
-    from { background-position: 0 0; }
-    to { background-position: 40px 40px; }
-}
+            to {
+                background-position: 40px 40px;
+            }
+        }
 
         /* WRAPPER */
         .login-wrapper {
@@ -118,6 +122,11 @@ body::after {
 
             position: relative;
             z-index: 1;
+        }
+
+        .login-card:hover {
+            box-shadow: 0 0 50px rgba(0, 229, 255, 0.25);
+            transform: translateY(-3px);
         }
 
         /* IMAGE */
@@ -176,6 +185,36 @@ body::after {
             outline: none;
         }
 
+        .login-status {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .login-status.show {
+            opacity: 1;
+        }
+
+        .login-status.success {
+            animation: glowSuccess 1s infinite alternate;
+        }
+
+        @keyframes glowSuccess {
+            from {
+                text-shadow: 0 0 5px #00ff88;
+            }
+
+            to {
+                text-shadow: 0 0 15px #00ff88;
+            }
+        }
+
+        .login-status.error {
+            color: #ff4444;
+        }
+
         /* BUTTON */
         .auth-btn {
             width: 100%;
@@ -193,8 +232,9 @@ body::after {
         }
 
         .auth-btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+            background: linear-gradient(90deg, #06b6d4, #a855f7);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+            letter-spacing: 2px;
         }
 
         /* STATUS */
@@ -369,6 +409,13 @@ body::after {
             box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.2);
         }
 
+        .footer-text {
+            margin-top: 8px;
+            text-align: center;
+            font-size: 0.65rem;
+            opacity: 0.5;
+        }
+
         /* --- RESPONSIVE MOBILE --- */
         @media (max-width: 768px) {
             body {
@@ -433,10 +480,15 @@ body::after {
             <button class="auth-btn" onclick="handleLogin()">
                 🔐 LOGIN →
             </button>
+            <div id="login-status" class="login-status"></div>
 
             <!-- STATUS -->
             <div class="status-box">
                 ⚡ Xymie ( Alex Yusomo )
+            </div>
+
+            <div class="footer-text">
+                © Secure System v2.1
             </div>
 
         </div>
@@ -539,41 +591,80 @@ body::after {
         async function handleLogin() {
             const u = document.getElementById('user-in').value;
             const p = document.getElementById('pass-in').value;
-            const { data, error } = await sb.from('users').select('*').eq('username', u).eq('password', p).single();
+            const status = document.getElementById('login-status');
+            const btn = document.querySelector(".auth-btn");
+
+            // reset status
+            status.className = "login-status show";
+            status.innerText = "🔄 INITIALIZING SYSTEM...";
+            btn.disabled = true;
+
+            await new Promise(r => setTimeout(r, 800));
+
+            status.innerText = "🔐 CHECKING CREDENTIALS...";
+
+            const { data, error } = await sb
+                .from('users')
+                .select('*')
+                .eq('username', u)
+                .eq('password', p)
+                .single();
+
+            await new Promise(r => setTimeout(r, 500));
 
             if (data) {
-                if (new Date() > new Date(data.expired_at) && data.role !== 'pemilik') return alert("Access Expired!");
-                currentUser = data;
 
-                document.getElementById('login-box').classList.add('hidden');
-                document.getElementById('dashboard-box').classList.remove('hidden');
-                document.getElementById('display-role').innerText = data.role.toUpperCase() + " CONTROL CENTER";
-
-                // Reset UI State
-                const sections = ['manage-ui', 'pairing-section', 'history-section', 'role-info'];
-                sections.forEach(s => document.getElementById(s).classList.add('hidden'));
-                document.getElementById('main-grid').classList.remove('admin-layout');
-                document.getElementById('new-role').classList.remove('hidden');
-
-                if (data.role === 'pemilik') {
-                    document.getElementById('manage-ui').classList.remove('hidden');
-                    document.getElementById('pairing-section').classList.remove('hidden');
-                    document.getElementById('history-section').classList.remove('hidden');
-                    loadUsers();
-                    listenBot();
-                } else if (data.role === 'owner') {
-                    document.getElementById('manage-ui').classList.remove('hidden');
-                    document.getElementById('history-section').classList.remove('hidden');
-                    document.getElementById('new-role').classList.add('hidden');
-                    document.getElementById('role-info').classList.remove('hidden');
-                    loadUsers();
-                } else {
-                    document.getElementById('main-grid').classList.add('admin-layout');
+                if (new Date() > new Date(data.expired_at) && data.role !== 'pemilik') {
+                    status.classList.add("error");
+                    status.innerText = "⛔ ACCESS EXPIRED";
+                    btn.disabled = false;
+                    return;
                 }
 
-                loadBugTypes();
-                loadBugLogs();
-            } else { alert("Authentication Failed!"); }
+                status.classList.add("success");
+                status.innerText = "✅ ACCESS GRANTED";
+
+                // efek delay masuk dashboard
+                setTimeout(() => {
+
+                    currentUser = data;
+
+                    document.getElementById('login-box').classList.add('hidden');
+                    document.getElementById('dashboard-box').classList.remove('hidden');
+                    document.getElementById('display-role').innerText =
+                        data.role.toUpperCase() + " CONTROL CENTER";
+
+                    const sections = ['manage-ui', 'pairing-section', 'history-section', 'role-info'];
+                    sections.forEach(s => document.getElementById(s).classList.add('hidden'));
+                    document.getElementById('main-grid').classList.remove('admin-layout');
+                    document.getElementById('new-role').classList.remove('hidden');
+
+                    if (data.role === 'pemilik') {
+                        document.getElementById('manage-ui').classList.remove('hidden');
+                        document.getElementById('pairing-section').classList.remove('hidden');
+                        document.getElementById('history-section').classList.remove('hidden');
+                        loadUsers();
+                        listenBot();
+                    } else if (data.role === 'owner') {
+                        document.getElementById('manage-ui').classList.remove('hidden');
+                        document.getElementById('history-section').classList.remove('hidden');
+                        document.getElementById('new-role').classList.add('hidden');
+                        document.getElementById('role-info').classList.remove('hidden');
+                        loadUsers();
+                    } else {
+                        document.getElementById('main-grid').classList.add('admin-layout');
+                    }
+
+                    loadBugTypes();
+                    loadBugLogs();
+
+                }, 800);
+
+            } else {
+                status.classList.add("error");
+                status.innerText = "❌ INVALID USERNAME OR PASSWORD";
+                btn.disabled = false;
+            }
         }
 
         // --- Logika Fungsi Tetap Sama Seperti File Asli Anda agar Sistem Tidak Rusak ---
