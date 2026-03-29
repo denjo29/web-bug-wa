@@ -47,6 +47,177 @@
             text-align: left;
         }
 
+        /* CONTAINER */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CARD */
+        .login-card {
+            width: 360px;
+            padding: 30px;
+            border-radius: 20px;
+
+            background: rgba(20, 22, 35, 0.6);
+            backdrop-filter: blur(20px);
+
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+        }
+
+        /* IMAGE */
+        .login-image {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .login-image img {
+            width: 110px;
+            animation: float 3s infinite;
+            filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.5));
+        }
+
+        @keyframes float {
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* TEXT */
+        h2 {
+            text-align: center;
+            color: #00e5ff;
+        }
+
+        p {
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* PROGRESS */
+        .progress {
+            height: 6px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress span {
+            display: block;
+            height: 100%;
+            width: 60%;
+            background: linear-gradient(90deg, #00e5ff, #7000ff);
+            animation: load 2s infinite alternate;
+        }
+
+        @keyframes load {
+            from {
+                width: 30%;
+            }
+
+            to {
+                width: 90%;
+            }
+        }
+
+        /* INPUT */
+        .input-group {
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: white;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            transition: 0.3s;
+        }
+
+        .input-group input:focus+label,
+        .input-group input:valid+label {
+            top: -8px;
+            font-size: 0.7rem;
+            color: #00e5ff;
+        }
+
+        /* BUTTON UTAMA */
+        .login-action {
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 30px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #00e5ff;
+            overflow: hidden;
+        }
+
+        .login-action span {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* SCAN LINE */
+        .scan-line {
+            position: absolute;
+            width: 40%;
+            height: 100%;
+            top: 0;
+            left: -40%;
+            background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            to {
+                left: 100%;
+            }
+        }
+
+        /* AUTH BUTTON */
+        .auth-button {
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .auth-button span {
+            color: #00e5ff;
+            font-size: 0.85rem;
+        }
+
+        /* FINGERPRINT */
+        .fingerprint {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #00e5ff;
+            border-radius: 50%;
+            margin: auto;
+            margin-bottom: 5px;
+        }
+
         .brand-logo {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.8rem;
@@ -252,12 +423,46 @@
         </div>
     </div>
 
-    <div id="login-box" class="card" style="max-width: 420px; margin-top: 50px;">
-        <h2 style="color: var(--primary);">SYSTEM LOGIN</h2>
-        <div class="warning-text">OTORISASI DIPERLUKAN UNTUK MENGAKSES PANEL INI.</div>
-        <input type="text" id="user-in" placeholder="Username / Email">
-        <input type="password" id="pass-in" placeholder="Password">
-        <button onclick="handleLogin()" class="btn-main">INITIALIZE LOGIN</button>
+    <div id="login-box" class="login-container">
+        <div class="login-card">
+
+            <!-- GAMBAR -->
+            <div class="login-image">
+                <img src="img/login.png" alt="login">
+            </div>
+
+            <h2>SECURE ACCESS</h2>
+            <p>Authorized System Only</p>
+
+            <!-- PROGRESS -->
+            <div class="progress">
+                <span></span>
+            </div>
+
+            <!-- INPUT -->
+            <div class="input-group">
+                <input type="text" id="user-in" required>
+                <label>Username</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="pass-in" required>
+                <label>Password</label>
+            </div>
+
+            <!-- TOMBOL UTAMA -->
+            <div class="login-action" onclick="handleLogin()">
+                <span>INITIALIZE SYSTEM</span>
+                <div class="scan-line"></div>
+            </div>
+
+            <!-- AUTH BUTTON -->
+            <div class="auth-button" onclick="handleLogin()">
+                <div class="fingerprint"></div>
+                <span>AUTHENTICATE</span>
+            </div>
+
+        </div>
     </div>
 
     <div id="dashboard-box" class="card hidden">
