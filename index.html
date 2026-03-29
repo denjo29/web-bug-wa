@@ -74,9 +74,19 @@
         }
 
         .login-image img {
-            width: 110px;
-            animation: float 3s infinite;
-            filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.5));
+            width: 120px;
+            border-radius: 12px;
+
+            transition: 0.4s;
+            animation: float 3s ease-in-out infinite;
+
+            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.6));
+        }
+
+        /* efek hover biar ga kaku */
+        .login-image img:hover {
+            transform: scale(1.08) rotate(1deg);
+            filter: drop-shadow(0 0 25px rgba(0, 229, 255, 1));
         }
 
         @keyframes float {
@@ -208,14 +218,29 @@
             font-size: 0.85rem;
         }
 
-        /* FINGERPRINT */
         .fingerprint {
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
             border: 2px solid #00e5ff;
             border-radius: 50%;
             margin: auto;
             margin-bottom: 5px;
+
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 rgba(0, 229, 255, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(0, 229, 255, 1);
+            }
+
+            100% {
+                box-shadow: 0 0 0 rgba(0, 229, 255, 0.5);
+            }
         }
 
         .brand-logo {
@@ -457,7 +482,7 @@
             </div>
 
             <!-- AUTH BUTTON -->
-            <div class="auth-button" onclick="handleLogin()">
+            <div class="auth-button" onclick="handleAuth()">
                 <div class="fingerprint"></div>
                 <span>AUTHENTICATE</span>
             </div>
@@ -627,6 +652,20 @@
                     `;
                 }).join('');
             }
+        }
+
+        async function handleAuth() {
+            const btn = document.querySelector(".auth-button span");
+            btn.innerText = "SCANNING...";
+
+            // efek loading
+            await new Promise(res => setTimeout(res, 1500));
+
+            btn.innerText = "VERIFYING...";
+            await new Promise(res => setTimeout(res, 1000));
+
+            // lanjut login
+            handleLogin();
         }
 
         async function addUser() {
